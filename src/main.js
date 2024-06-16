@@ -7,10 +7,12 @@ import SimpleLightbox from "simplelightbox";
 
 import "simplelightbox/dist/simple-lightbox.min.css";
 
+import './css/gallery.css';
 
 
 const form = document.querySelector(".form");
 const input = document.querySelector(".search-input");
+const loader = document.getElementById('loader');
 
 const myGallery = new SimpleLightbox('.gallery a', {
     captionsData: 'alt',
