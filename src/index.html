@@ -4,22 +4,21 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vanilla App Template</title>
-    <link rel="stylesheet" href="./css/styles.css" />
+    <title>Image Search App</title>
+    <link rel="stylesheet" href="./css/gallery.css" />
+    <link rel="stylesheet" href="node_modules/izitoast/dist/css/iziToast.min.css" />
+    <link rel="stylesheet" href="node_modules/simplelightbox/dist/simple-lightbox.min.css" />
 </head>
 
 <body>
-    <section class="section-form">
-        <form class="form">
-            <label for="search"></label>
-            <input type="text" name="search" class="search-input" placeholder="Search images..." />
-            </label>
-            <button type="submit" class="btn">Start</button>
+    <div class="container">
+        <form id="search-form" class="search-form">
+            <input type="text" id="search-input" placeholder="Search for images..." />
+            <button type="submit">Search</button>
         </form>
-
-        <div id="loader" class="loader" style="display: none;"></div>
-        <ul class="gallery"></ul>
-    </section>
+        <div id="loader" class="loader" style="display: none"></div>
+        <div id="gallery" class="gallery"></div>
+    </div>
 
     <script type="module" src="./main.js"></script>
 </body>

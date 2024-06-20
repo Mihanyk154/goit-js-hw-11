@@ -1,43 +1,30 @@
-export function clearGallery() {
-    const gallery = document.querySelector('.gallery');
-    gallery.innerHTML = '';
-}
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
+
+let lightbox;
 
 export function displayImages(images) {
-    const gallery = document.querySelector('.gallery');
-    images.forEach(image => {
-        const card = createImageCard(image);
-        gallery.appendChild(card);
-    });
-}
+    const gallery = document.getElementById('gallery');
+    gallery.innerHTML = images.map(image => `
+        <li class="gallery-item">
+            <a href="${image.largeImageURL}" class="gallery-link">
+                <img src="${image.webformatURL}" alt="${image.tags}">
+            </a>
+            <div class="info">
+                <p><strong>Likes:</strong> ${image.likes}</p>
+                <p><strong>Views:</strong> ${image.views}</p>
+                <p><strong>Comments:</strong> ${image.comments}</p>
+                <p><strong>Downloads:</strong> ${image.downloads}</p>
+            </div>
+        </li>
+    `).join('');
 
-function createImageCard(image) {
-    const card = document.createElement('div');
-    card.classList.add('card');
-
-    const imageElement = document.createElement('img');
-    imageElement.src = image.webformatURL;
-    imageElement.alt = image.tags;
-
-    const cardInfo = document.createElement('div');
-    cardInfo.classList.add('card-info');
-    cardInfo.innerHTML = `
-        <p>Likes: ${image.likes}</p>
-        <p>Views: ${image.views}</p>
-        <p>Comments: ${image.comments}</p>
-        <p>Downloads: ${image.downloads}</p>
-    `;
-
-    card.appendChild(imageElement);
-    card.appendChild(cardInfo);
-
-    return card;
-}
-
-export function showMessage(message) {
-    iziToast.error({
-        title: 'Error',
-        message: message,
-        position: 'topRight'
-    });
+    if (lightbox) {
+        lightbox.refresh();
+    } else {
+        lightbox = new SimpleLightbox('.gallery a', {
+            captionsData: 'alt',
+            captionDelay: 250
+        });
+    }
 }

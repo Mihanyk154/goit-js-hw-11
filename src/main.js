@@ -1,116 +1,44 @@
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
+import { searchImages } from './js/pixabay-api';
+import { displayImages } from './js/render-functions';
 
-import iziToast from "izitoast";
+document.addEventListener("DOMContentLoaded", () => {
+    const searchForm = document.getElementById('search-form');
+    const searchInput = document.getElementById('search-input');
+    const loader = document.getElementById('loader');
 
-import "izitoast/dist/css/iziToast.min.css";
+    searchForm.addEventListener('submit', async event => {
+        event.preventDefault();
+        const query = searchInput.value.trim();
 
-import SimpleLightbox from "simplelightbox";
+        if (query === '') {
+            iziToast.error({
+                title: 'Error',
+                message: 'Search query cannot be empty!'
+            });
+            return;
+        }
 
-import "simplelightbox/dist/simple-lightbox.min.css";
+        loader.style.display = 'block';
 
-import './css/gallery.css';
-
-
-const form = document.querySelector(".form");
-const input = document.querySelector(".search-input");
-const loader = document.getElementById('loader');
-
-const myGallery = new SimpleLightbox('.gallery a', {
-    captionsData: 'alt',
-    captionDelay: 250,
-    close: true,
-    enableKeyboard: true,
-    docClose: true,
+        try {
+            const images = await searchImages(query);
+            if (images.length === 0) {
+                iziToast.error({
+                    title: 'Sorry',
+                    message: 'There are no images matching your search query. Please try again!'
+                });
+            } else {
+                displayImages(images);
+            }
+        } catch (error) {
+            iziToast.error({
+                title: 'Error',
+                message: 'Failed to fetch images. Please try again later.'
+            });
+        } finally {
+            loader.style.display = 'none'; 
+        }
+    });
 });
-
-
-
-form.addEventListener("submit", checkEmptyInput);
-
-
-
-function checkEmptyInput(e) {
-    e.preventDefault();
-    showLoader(true);
-    const inputValue = input.value;
-    if (!inputValue) {
-        errorMess('Value cannot be empty')
-    } else {
-        getImg(inputValue)
-            .then(data => {
-                showLoader(false);
-                if (data.hits.length === 0) {
-                    errorMess("Sorry, there are no images matching your search query. Please try again!");
-                } else {
-                    const images = data.hits;
-                    createGallery(images);
-
-                    myGallery.refresh()
-                }
-            }).catch(error => {
-                errorMess("Something wrong=(")
-                showLoader(false);
-            })
-    }
-};
-
-const errorMess = (messege) => {
-    iziToast.error({
-        title: 'Error',
-        message: messege,
-        backgroundColor: '#EF4040',
-        messageColor: '#FFFFFF',
-        maxWidth: 300,
-        timeout: 2000,
-        progressBar: false,
-        position: 'topRight',
-        transitionIn: 'bounceInRight',
-        transitionOut: 'fadeOutLeft',
-        messageSize: 12,
-    })
-}
-
-
-
-function getImg(inputValue) {
-    const api = "https://pixabay.com/api/";
-    const API_KEY = "43042666-e07e8410a021eff335b7f491d";
-    const searchParams = {
-        key: API_KEY,
-        q: inputValue,
-        image_type: "photo",
-        orientation: "horizontal",
-        safesearch: true
-    };
-    const params = new URLSearchParams(searchParams);
-    const url = `${api}?${params}`;
-    return fetch(url).then(res => res.json());
-}
-
-
-
-
-function createGallery(images) {
-    const list = document.querySelector(".gallery");
-    list.innerHTML = images.map(image => {
-        return `<li class="list-item"><a href="${image.largeImageURL}">
-        <img class="item-img" src="${image.webformatURL}" alt="${image.tags}"></a>
-        <div class="container">
-        <h3 class="title">Likes</h3>
-      <p>${image.likes}</p></div >
-      <div class="container">
-        <h3 class="title">Views</h3>
-      <p>${image.views}</p></div >
-      <div class="container">
-        <h3 class="title">Comments</h3>
-      <p>${image.comments}</p></div >
-      <div class="container">
-        <h3 class="title">Downloads</h3>
-      <p class="info">${image.downloads}</p></div >
-        </li>`
-    }).join("");
-}
-
-const showLoader = (state) => {
-    const loader = document.querySelector('.loader');
-    loader.style.display = state ? 'block' : 'none';
-};
