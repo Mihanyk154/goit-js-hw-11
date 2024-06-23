@@ -1,30 +1,45 @@
-import SimpleLightbox from "simplelightbox";
-import "simplelightbox/dist/simple-lightbox.min.css";
+import SimpleLightbox from 'simplelightbox';
 
-let lightbox;
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
-export function displayImages(images) {
-    const gallery = document.getElementById('gallery');
-    gallery.innerHTML = images.map(image => `
-        <li class="gallery-item">
-            <a href="${image.largeImageURL}" class="gallery-link">
-                <img src="${image.webformatURL}" alt="${image.tags}">
+import { refs } from '../main';
+const lightbox = new SimpleLightbox('.gallery li', {
+    captionsData: 'alt',
+    captionDelay: 250,
+});
+
+export function marcupImage(images) {
+    const marcup = images
+        .map(image => {
+            return `<li class="gallery-item"
+      <a class="gallery-link" href="${image.largeImageURL}">
+    <img
+      width=360;
+      height=200;
+      class="gallery-image"
+      src="${image.webformatURL}"
+      alt="${image.tags} " />
+          <div class="image-info">
+               <p>LIKES: ${image.likes}</p>
+                    <p>VIEWS: ${image.views}</p>
+                    <p>COMMENTS: ${image.comments}</p>
+                    <p>DOWNLOADS: ${image.downloads}</p>
+                </div>
             </a>
-            <div class="info">
-                <p><strong>Likes:</strong> ${image.likes}</p>
-                <p><strong>Views:</strong> ${image.views}</p>
-                <p><strong>Comments:</strong> ${image.comments}</p>
-                <p><strong>Downloads:</strong> ${image.downloads}</p>
-            </div>
-        </li>
-    `).join('');
+            </li>
+        `;
+        })
+        .join('');
+    refs.imgGallery.innerHTML = marcup;
+    lightbox.refresh();
+}
+export function showLoader() {
+    refs.loader.classList.remove('hidden');
+}
 
-    if (lightbox) {
-        lightbox.refresh();
-    } else {
-        lightbox = new SimpleLightbox('.gallery a', {
-            captionsData: 'alt',
-            captionDelay: 250
-        });
-    }
+export function hideLoader() {
+    refs.loader.classList.add('hidden');
+}
+export function formReset() {
+    refs.formSearch.reset();
 }
